@@ -1,0 +1,10 @@
+{% extends 'layout.html' %}
+
+{% block title %}批量添加产品{% endblock %}
+
+{% block content %}
+<div class="container">
+    <label for="formFileMultiple" class="form-label">选择要上传的一个或多个文件</label>
+    <input class="form-control" type="file" id="formFileMultiple" multiple>
+</div>
+{% endblock %}
