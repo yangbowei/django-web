@@ -1,10 +1,11 @@
-from django import forms
 from django.http import HttpResponse
+from django.http import HttpResponseRedirect
+
 from django.shortcuts import render
 from django.shortcuts import redirect
-
 import stockapp.models as models
 import stockapp.tables as tables
+import stockapp.forms as forms
 
 
 # Create your views here.
@@ -19,24 +20,13 @@ def products(request):
     return render(request, "products.html", {"table": table})
 
 
-class ProductModelForm(forms.ModelForm):
-    class Meta:
-        model = models.Product
-        fields = ['brand', 'model', 'quantity', 'period', 'source']
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        for name, field in self.fields.items():
-            field.widget.attrs.update({"class": "form-control"})
-
-
 def add_product(request):
     if request.method == "GET":
-        form = ProductModelForm()
+        form = forms.ProductModelForm()
         return render(request, 'add_product.html', {"form": form})
 
     # Post
-    form = ProductModelForm(data=request.POST)
+    form = forms.ProductModelForm(data=request.POST)
     if not form.is_valid():
         print(form.errors)
     else:
@@ -45,14 +35,13 @@ def add_product(request):
 
 
 def add_products(request):
-    if request.method == "GET":
-        form = ProductModelForm()
-        return render(request, 'add_products.html', {"form": form})
-
-    # Post
-    form = ProductModelForm(data=request.POST)
-    if not form.is_valid():
-        print(form.errors)
+    if request.method == "POST":
+        form = forms.UploadProductFileForm(request.POST, request.FILES)
+        if form.is_valid():
+            for name, file in form.files.items():
+                print(name, file.name, file.size)
+            # handle_uploaded_file(request.FILES["file"])
+            return HttpResponseRedirect("/products/")
     else:
-        form.save()
-        return redirect(products)
+        form = forms.UploadProductFileForm()
+        return render(request, "add_products.html", {"form": form})
