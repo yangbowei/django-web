@@ -13,7 +13,7 @@ def index(req):
     return HttpResponse("Hello!")
 
 
-def products(request):
+def get_product(request):
     product_list = models.Product.objects.all()
     table = tables.ProductTable(product_list)
     table.attrs.update({"class": "table table-striped table-bordered"})
@@ -31,7 +31,7 @@ def add_product(request):
         print(form.errors)
     else:
         form.save()
-        return redirect(products)
+        return redirect(get_product)
 
 
 def add_products(request):
@@ -45,3 +45,24 @@ def add_products(request):
     else:
         form = forms.UploadProductFileForm()
         return render(request, "add_products.html", {"form": form})
+
+
+def edit_product(request, uid):
+    prod_info = models.Product.objects.filter(id=uid).first()
+
+    if request.method == "GET":
+        form = forms.ProductModelForm(instance=prod_info)
+        return render(request, 'edit_product.html', {"form": form})
+
+    # Post
+    form = forms.ProductModelForm(data=request.POST, instance=prod_info)
+    if form.is_valid():
+        form.save()
+        return redirect(get_product)
+    else:
+        return render(request, 'edit_product.html', {"form": form})
+
+
+def delete_product(request, uid):
+    models.Product.objects.filter(id=uid).delete()
+    return redirect(get_product)

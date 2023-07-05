@@ -19,8 +19,10 @@ from stockapp import views
 
 urlpatterns = [
     path('', views.index),
-    path('products/', views.products),
-    path('products/add/', views.add_product),
-    path('products/batch-add/', views.add_products),
+    path('product/', views.get_product),
+    path('product/add/', views.add_product),
+    path('product/<int:uid>/edit/', views.edit_product),
+    path('product/<int:uid>/delete/', views.delete_product),
+    path('product/batch-add/', views.add_products),
     path('admin/', admin.site.urls)
 ]

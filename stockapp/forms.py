@@ -3,7 +3,9 @@ from stockapp.models import Product
 
 
 class UploadProductFileForm(forms.Form):
-    file = forms.FileField(widget=forms.ClearableFileInput(attrs={"class": "form-control"}))
+    file = forms.FileField(allow_empty_file=False,
+                           max_length=64,
+                           widget=forms.ClearableFileInput(attrs={"class": "form-control"}))
 
 
 class ProductModelForm(forms.ModelForm):
