@@ -1,13 +1,11 @@
-import datetime
-
 from django.db import models
 
 
 class Product(models.Model):
-    brand = models.CharField(verbose_name="品牌", max_length=32, )
+    brand = models.CharField(verbose_name="品牌", max_length=32, blank=True)
     model = models.CharField(verbose_name="型号", max_length=64)
     quantity = models.IntegerField(verbose_name="库存", default=0)
-    period = models.CharField(verbose_name="周期", max_length=32)
+    period = models.CharField(verbose_name="周期", max_length=32, blank=True)
     source = models.CharField(verbose_name="来源", max_length=64, blank=True)
     creation_time = models.DateTimeField(verbose_name="写入时间", auto_now_add=True)
 

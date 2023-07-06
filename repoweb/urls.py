@@ -18,11 +18,12 @@ from django.urls import path
 from stockapp import views
 
 urlpatterns = [
-    path('', views.index),
+    path('', views.get_product),
     path('product/', views.get_product),
     path('product/add/', views.add_product),
     path('product/<int:uid>/edit/', views.edit_product),
     path('product/<int:uid>/delete/', views.delete_product),
     path('product/batch-add/', views.add_products),
+    path('product/search/', views.search_product),
     path('admin/', admin.site.urls)
 ]

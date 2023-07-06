@@ -7,7 +7,8 @@ class ProductTable(tables.Table):
     buttons = tables.TemplateColumn(
         template_name="table_button.html", verbose_name="Actions", orderable=False
     )
+
     class Meta:
+        orderable = False
         model = Product
         template_name = "django_tables2/bootstrap5.html"
-        # exclude = ('creation_time', )

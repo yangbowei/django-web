@@ -8,6 +8,10 @@ class UploadProductFileForm(forms.Form):
                            widget=forms.ClearableFileInput(attrs={"class": "form-control"}))
 
 
+class QueryTextForm(forms.Form):
+    query = forms.CharField(label="", help_text="", widget=forms.Textarea)
+
+
 class ProductModelForm(forms.ModelForm):
     class Meta:
         model = Product

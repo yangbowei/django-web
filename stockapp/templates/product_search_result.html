@@ -1,10 +1,14 @@
 {% extends 'product_table_base.html' %}
+{% load export_url from django_tables2 %}
 
-{% block title %}全部产品{% endblock %}
+{% block title %}检索结果{% endblock %}
 
 {% block buttons %}
 <a class="btn btn-primary" href="/product/add/" role="button">添加</a>
 <a class="btn btn-primary" href="/product/batch-add/" role="button">批量添加</a>
-<a class="btn btn-primary" href="/product/delete/" role="button">全部删除</a>
 <a class="btn btn-primary" href="/product/search/" role="button">批量搜索</a>
+<a class="btn btn-danger" href="#" role="button">全部删除</a>
+<a class="btn btn-info" href="#" role="button">全部导出</a>
+{% export_url "csv" %}
+
 {% endblock %}
