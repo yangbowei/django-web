@@ -74,7 +74,7 @@ def delete_all_products(request):
     product_count = models.Product.objects.count()
     models.ProductFile.objects.all().delete()
     models.Product.objects.all().delete()
-    msg = str.format('来自{}个文件的{}条数据已被删除!', product_count, product_file_count)
+    msg = str.format('来自{}个文件的{}条数据已被删除!', product_file_count, product_count)
     return render(request, "action_result.html", {"message": msg})
 
 
@@ -98,6 +98,6 @@ def search_product(request):
             result = models.Product.objects.filter(condition)
             # result = models.Product.objects.filter(model__contains=key_words, brand__contains=key_words)
             table = tables.ProductTable(result)
-            table.paginate(page=request.GET.get("page", 1), per_page=5)
+            # table.paginate(page=request.GET.get("page", 1), per_page=5)
             table.attrs.update({"class": "table table-striped table-bordered"})
             return render(request, "product_search_result.html", {"table": table})

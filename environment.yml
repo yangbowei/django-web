@@ -14,13 +14,13 @@ dependencies:
   - djangorestframework=3.14.0
   - et_xmlfile=1.1.0
   - intel-openmp=2023.1.0
-  - libcxx=14.0.6
+  # - libcxx=14.0.6
   - libffi=3.4.4
   - mkl=2023.1.0
   - mkl-service=2.4.0
   - mkl_fft=1.3.6
   - mkl_random=1.2.2
-  - ncurses=6.4
+  # - ncurses=6.4
   - numexpr=2.8.4
   - numpy=1.25.0
   - numpy-base=1.25.0
@@ -31,7 +31,7 @@ dependencies:
   - python=3.11.3
   - python-dateutil=2.8.2
   - pytz=2023.3
-  - readline=8.2
+  # - readline=8.2
   - setuptools=67.8.0
   - six=1.16.0
   - sqlite=3.41.2
@@ -42,4 +42,4 @@ dependencies:
   - wheel=0.38.4
   - xz=5.4.2
   - zlib=1.2.13
-prefix: /usr/local/Caskroom/miniconda/base/envs/djenv
+# prefix: /usr/local/Caskroom/miniconda/base/envs/djenv

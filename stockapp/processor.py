@@ -26,6 +26,7 @@ def process_excel_file(file_name, size, file):
         df = pd.read_csv(file, header=None)
 
     df = df.dropna(how='all')
+    df = df.drop_duplicates()
     if len(df) <= 1:
         return 'No valid data found in file'
     is_first_row = True
@@ -56,21 +57,12 @@ def process_excel_file(file_name, size, file):
             products.append(product_dict)
 
     # save obj
-    success = 0
-    failure = 0
-    failure_messages = []
-    for product in products:
-        try:
-            models.Product.objects.create(**product)
-            success += 1
-        except Exception as e:
-            print(e)
-            failure += 1
-
+    prod_data = [models.Product(**product) for product in products]
+    objs = models.Product.objects.bulk_create(prod_data, ignore_conflicts=True)
     file_item = models.ProductFile(name=file_name, size=size, checksum=checksum_value)
     file_item.save()
 
-    return str.format('Succeed loading {} items. Failed to load {} items', success, failure)
+    return str.format('导入成功{}条数据。注意数据若有重复可能存在误差', len(objs))
 
 
 def validate_file(file_name, size, checksum_value):
