@@ -1,8 +1,9 @@
-import pandas as pd
 import hashlib
 import re
-from . import models
 
+import pandas as pd
+
+from . import models
 
 COLS = set(['品牌', '型号', '库存', '周期'])
 COL_MODEL_NAME = {

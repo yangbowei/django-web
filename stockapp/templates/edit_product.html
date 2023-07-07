@@ -3,28 +3,28 @@
 {% block title %}编辑产品{% endblock %}
 
 {% block content %}
-<div class="container">
-    <div class="card">
-        <div class="card-header">
-            编辑产品
-        </div>
-        <div class="card-body" style="width: 100%">
-            <form method="post">
-                <div class="form-row">
-                    {% csrf_token %}
+    <div class="container">
+        <div class="card">
+            <div class="card-header">
+                编辑产品
+            </div>
+            <div class="card-body" style="width: 100%">
+                <form method="post">
+                    <div class="form-row">
+                        {% csrf_token %}
 
-                    {% for field in form %}
-                        <div class="col-md-6 mb-3">
-                            <label>{{ field.label }}</label>
-                            {{ field }}
-                        </div>
-                    {% endfor %}
+                        {% for field in form %}
+                            <div class="col-md-6 mb-3">
+                                <label>{{ field.label }}</label>
+                                {{ field }}
+                            </div>
+                        {% endfor %}
 
-                    <button class="btn btn-primary" type="submit">Submit</button>
-                </div>
-            </form>
+                        <button class="btn btn-primary" type="submit">Submit</button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
-</div>
 
 {% endblock content %}

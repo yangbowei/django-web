@@ -3,12 +3,12 @@
 {% block title %}批量添加产品{% endblock %}
 
 {% block content %}
-<div class="container">
-    <form method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-        {{ form }}
-        <input class="btn btn-success" type="submit" value = "上传">
-    </form>
+    <div class="container">
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form }}
+            <input class="btn btn-success" type="submit" value="上传">
+        </form>
 
-</div>
+    </div>
 {% endblock %}

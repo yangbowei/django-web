@@ -1,13 +1,12 @@
+from django.db.models import Q
 from django.http import HttpResponse
-from django.http import HttpResponseRedirect
-
-from django.shortcuts import render
 from django.shortcuts import redirect
-import django.forms
-from . import models
-from . import tables
+from django.shortcuts import render
+
 from . import forms
+from . import models
 from . import processor
+from . import tables
 
 
 # Create your views here.
@@ -87,11 +86,17 @@ def search_product(request):
     # Post
     form = forms.QueryTextForm(data=request.POST)
     if form.is_valid():
-        print(form.changed_data[0])
         for name, data in form.cleaned_data.items():
             filtered = filter(lambda x: x != '', data.split('\n'))
             key_words = set(map(lambda x: x.strip(), filtered))
-            result = models.Product.objects.filter(model__in=key_words)
+
+            # build or conditions
+            condition = Q()
+            for key_word in key_words:
+                condition |= Q(model__contains=key_word)
+                condition |= Q(brand__contains=key_word)
+            result = models.Product.objects.filter(condition)
+            # result = models.Product.objects.filter(model__contains=key_words, brand__contains=key_words)
             table = tables.ProductTable(result)
             table.paginate(page=request.GET.get("page", 1), per_page=5)
             table.attrs.update({"class": "table table-striped table-bordered"})

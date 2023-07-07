@@ -14,8 +14,11 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, re_path
+from django.views.static import serve
+
 from stockapp import views
+from . import settings
 
 urlpatterns = [
     path('', views.get_product),
@@ -26,5 +29,8 @@ urlpatterns = [
     path('product/delete/', views.delete_all_products),
     path('product/batch-add/', views.add_products),
     path('product/search/', views.search_product),
-    path('admin/', admin.site.urls)
+    path('admin/', admin.site.urls),
+    # define routing for static files
+    re_path('static/(?P<path>.*)', serve, {'document_root': settings.STATIC_ROOT}, name='static'),
+    re_path('media/(?P<path>.*)', serve, {'document_root': settings.MEDIA_ROOT}, name='media')
 ]
