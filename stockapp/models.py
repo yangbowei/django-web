@@ -9,6 +9,9 @@ class Product(models.Model):
     source = models.CharField(verbose_name="来源", max_length=64, blank=True)
     creation_time = models.DateTimeField(verbose_name="写入时间", auto_now_add=True)
 
+    class Meta:
+        unique_together = ['brand', 'model', 'quantity', 'period', 'source']
+
 
 class ProductFile(models.Model):
     name = models.CharField(max_length=64)

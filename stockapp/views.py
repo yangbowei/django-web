@@ -9,6 +9,7 @@ from . import tables
 from . import forms
 from . import processor
 
+
 # Create your views here.
 def index(req):
     return HttpResponse("Hello!")
@@ -42,7 +43,7 @@ def add_products(request):
         if form.is_valid():
             for name, file in form.files.items():
                 msg = processor.process_excel_file(file.name, file.size, file.file)
-                return render(request, "batch_add_done.html", {"message": msg})
+                return render(request, "action_result.html", {"message": msg})
     else:
         form = forms.UploadProductFileForm()
         return render(request, "add_products.html", {"form": form})
@@ -67,6 +68,15 @@ def edit_product(request, uid):
 def delete_product(request, uid):
     models.Product.objects.filter(id=uid).delete()
     return redirect(get_product)
+
+
+def delete_all_products(request):
+    product_file_count = models.ProductFile.objects.count()
+    product_count = models.Product.objects.count()
+    models.ProductFile.objects.all().delete()
+    models.Product.objects.all().delete()
+    msg = str.format('来自{}个文件的{}条数据已被删除!', product_count, product_file_count)
+    return render(request, "action_result.html", {"message": msg})
 
 
 def search_product(request):

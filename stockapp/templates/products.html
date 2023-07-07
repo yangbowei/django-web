@@ -3,8 +3,10 @@
 {% block title %}全部产品{% endblock %}
 
 {% block buttons %}
-<a class="btn btn-primary" href="/product/add/" role="button">添加</a>
-<a class="btn btn-primary" href="/product/batch-add/" role="button">批量添加</a>
-<a class="btn btn-primary" href="/product/delete/" role="button">全部删除</a>
-<a class="btn btn-primary" href="/product/search/" role="button">批量搜索</a>
+    <a class="btn btn-primary" href="/product/add/" role="button">添加</a>
+    <a class="btn btn-primary" href="/product/batch-add/" role="button">批量添加</a>
+    <a class="btn btn-primary" href="/product/delete/" role="button"
+       onclick="return confirm('该操作会删除所有数据，是否确认？');">全部删除</a>
+    <a class="btn btn-primary" href="/product/search/" role="button">批量搜索</a>
+
 {% endblock %}
