@@ -91,10 +91,16 @@ def process_excel_file(file_name, size, file):
             products.append(product_dict)
 
     # save obj
-    prod_data = [models.Product(**product) for product in products]
-    objs = models.Product.objects.bulk_create(prod_data, ignore_conflicts=True)
     file_item = models.ProductFile(name=file_name, size=size, checksum=checksum_value)
     file_item.save()
+
+    # join file id with products
+    file_id = file_item.pk
+    for product in products:
+        product['file_id'] = file_id
+
+    prod_data = [models.Product(**product) for product in products]
+    objs = models.Product.objects.bulk_create(prod_data, ignore_conflicts=True)
 
     return True, len(objs)
 

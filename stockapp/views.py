@@ -83,6 +83,27 @@ def delete_all_products(request):
     return render(request, "action_result.html", {"messages": [msg]})
 
 
+def product_files(request):
+    file_list = models.ProductFile.objects.all()
+    table = tables.ProductFileTable(file_list)
+    table.paginate(page=request.GET.get("page", 1), per_page=25)
+    table.attrs.update({"class": "table table-striped table-bordered"})
+    return render(request, "delete_products.html", {"table": table})
+
+
+def delete_product_file(request, fid):
+    msg = []
+    if models.ProductFile.objects.filter(pk=fid).exists():
+        models.ProductFile.objects.filter(pk=fid).delete()
+        product_set_to_delete = models.Product.objects.filter(file_id=fid)
+        count = product_set_to_delete.count()
+        product_set_to_delete.delete()
+        msg.append(str(count) + "条记录被删除")
+    else:
+        msg.append("文件未找到")
+    return render(request, 'action_result.html', {"messages": msg})
+
+
 def search_product(request):
     if request.method == "GET":
         form = forms.QueryTextForm()

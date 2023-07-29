@@ -1,6 +1,6 @@
 import django_tables2 as tables
 
-from stockapp.models import Product
+from stockapp.models import Product, ProductFile
 
 
 class ProductTable(tables.Table):
@@ -12,4 +12,16 @@ class ProductTable(tables.Table):
     class Meta:
         orderable = False
         model = Product
+        template_name = "django_tables2/bootstrap5.html"
+
+
+class ProductFileTable(tables.Table):
+    extra_columns = {"Delete": tables.LinkColumn("delete/")}
+    buttons = tables.TemplateColumn(
+        template_name="table_delete_button.html", verbose_name="操作", orderable=False
+    )
+
+    class Meta:
+        orderable = False
+        model = ProductFile
         template_name = "django_tables2/bootstrap5.html"
