@@ -31,6 +31,7 @@ urlpatterns = [
     path('product-file/<int:fid>/delete/', views.delete_product_file),
     path('product/batch-add/', views.add_products),
     path('product/search/', views.search_product),
+    path('product/update-hp/', views.update_product_hit_point),
     path('admin/', admin.site.urls),
     # define routing for static files
     re_path('static/(?P<path>.*)', serve, {'document_root': settings.STATIC_ROOT}, name='static'),

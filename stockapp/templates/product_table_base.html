@@ -4,11 +4,90 @@
 {% block title %}全部产品{% endblock %}
 
 {% block content %}
-    <div class="container">
-        <div class="container" style="margin-bottom: 10px; padding: 0;">
-            {% block buttons %}{% endblock %}
-        </div>
-        {% render_table table %}
+<div class="container">
+    <div class="container" style="margin-bottom: 10px; padding: 0;">
+        <a class="btn btn-primary" href="/product/add/" role="button">添加</a>
+        <a class="btn btn-primary" href="/product/batch-add/" role="button">批量添加</a>
+        <a class="btn btn-primary" href="/product/search/" role="button">批量搜索</a>
+        <a class="btn btn-primary" href="/product-file/" role="button">批量删除</a>
+        {% block buttons %}{% endblock %}
     </div>
+    {% render_table table %}
+</div>
 
+{% endblock %}
+
+{% block js %}
+<script tyep="text/javascript">
+    $(document).ready(function() {
+        // execute after page framework loading done
+        var tmpCellText;
+        bindEditableTableCellEvent();
+    })
+
+    function selectText(id) {
+      if (document.selection) {
+          var range = document.body.createTextRange();
+          range.moveToElementText(document.getElementById(id));
+          range.select();
+      } else if (window.getSelection) {
+          var range = document.createRange();
+          range.selectNodeContents(document.getElementById(id));
+          window.getSelection().removeAllRanges();
+          window.getSelection().addRange(range);
+      }
+    }
+
+    function bindEditableTableCellEvent() {
+      $("td.editable_cell").click(function() {
+        tmpCellText = $(this).text();
+        selectText($(this).attr('id'));
+      });
+
+      $("td.editable_cell").focusout(function() {
+        const cell = $(this);
+        if (cell.text() === tmpCellText) {
+          return;
+        }
+        const parsed = parseInt(cell.text());
+        if (Number.isNaN(parsed)) {
+          // reset value
+          cell.animate({ backgroundColor: 'red' }, 500);
+          cell.text(tmpCellText);
+          cell.animate({ backgroundColor: 'while' }, 500);
+        } else {
+          let cookie = document.cookie;
+          let csrfToken = cookie.substring(cookie.indexOf('=') + 1);
+          $.ajax({
+              url: '/product/update-hp/',
+              type: 'POST',
+              headers: {
+                'X-CSRFToken': csrfToken
+              },
+              data: {
+                  pid: cell.attr('id'),
+                  val: parsed
+              },
+              dataType: 'JSON',
+              success: function (res) {
+                if (res.result === 'success') {
+                  cell.animate({ backgroundColor: 'green' }, 500);
+                  cell.text(parsed)
+                  cell.animate({ backgroundColor: 'while' }, 500);
+                } else {
+                  cell.animate({ backgroundColor: 'red' }, 500);
+                  cell.text(tmpCellText);
+                  cell.animate({ backgroundColor: 'while' }, 500);
+                }
+              },
+              error: function (res) {
+                cell.text(tmpCellText);
+                cell.animate({ backgroundColor: 'red' }, 500);
+                cell.animate({ backgroundColor: 'while' }, 500);
+              }
+          });
+        }
+      });
+    }
+</script>
 {% endblock %}

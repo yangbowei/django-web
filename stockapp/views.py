@@ -2,7 +2,9 @@ from django.db.models import Q
 from django.http import HttpResponse
 from django.shortcuts import redirect
 from django.shortcuts import render
-
+from django_tables2 import RequestConfig
+import json
+from . import configreader
 from . import forms
 from . import models
 from . import processor
@@ -17,7 +19,9 @@ def index(req):
 def get_product(request):
     product_list = models.Product.objects.all()
     table = tables.ProductTable(product_list)
-    table.paginate(page=request.GET.get("page", 1), per_page=25)
+    RequestConfig(request).configure(table)
+    page_size = configreader.INSTANCE.get_product_page_size(default_size=25)
+    table.paginate(page=request.GET.get("page", 1), per_page=page_size)
     table.attrs.update({"class": "table table-striped table-bordered"})
     return render(request, "products.html", {"table": table})
 
@@ -127,3 +131,28 @@ def search_product(request):
             # table.paginate(page=request.GET.get("page", 1), per_page=5)
             table.attrs.update({"class": "table table-striped table-bordered"})
             return render(request, "product_search_result.html", {"table": table})
+
+
+def update_product_hit_point(request):
+    if request.method == "POST" and \
+            request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest': # is ajax request
+        product_id = request.POST.get('pid')
+        hit_point_value = request.POST.get('val')
+        if hit_point_value is None or product_id is None:
+            data = {'result': 'failure'}
+            return HttpResponse(json.dump(data))
+
+        try:
+            pid = int(product_id)
+            hp = int(hit_point_value)
+            if models.Product.objects.filter(pk=pid).exists():
+                models.Product.objects.filter(pk=pid).update(hit_point=hp)
+                data = {'result': 'success'}
+            else:
+                # log data not found
+                data = {'result': 'failure'}
+        except ValueError:
+            data = {'result': 'failure'}
+        return HttpResponse(json.dumps(data))
+
+    return HttpResponse("not supported method type")

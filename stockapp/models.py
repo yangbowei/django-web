@@ -9,9 +9,10 @@ class Product(models.Model):
     creation_time = models.DateTimeField(verbose_name="写入时间", auto_now_add=True)
     source = models.CharField(verbose_name="来源文件", max_length=64, blank=True)
     file_id = models.IntegerField(verbose_name="文件ID", default=-1)
+    hit_point = models.IntegerField(verbose_name="热度", default=0)
 
     class Meta:
-        unique_together = ['brand', 'model', 'quantity', 'period', 'source']
+        unique_together = ['brand', 'model', 'quantity', 'period', 'file_id']
 
 
 class ProductFile(models.Model):

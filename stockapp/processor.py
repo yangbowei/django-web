@@ -1,7 +1,7 @@
-import configparser
 import hashlib
 import re
 import pandas as pd
+from . import configreader
 from . import models
 
 
@@ -11,35 +11,6 @@ DEFAULT_COL_MODEL_NAME = {
     'quantity': '库存',
     'period': '周期'
 }
-
-
-def build_column_name_mapping():
-    col_name_to_field_mapping = {}
-    for key in DEFAULT_COL_MODEL_NAME:
-        col_name_to_field_mapping[DEFAULT_COL_MODEL_NAME[key]] = key
-
-    config = configparser.ConfigParser()
-    read_ok = config.read('stockapp/config.ini')
-
-    section_name = 'EXCEL'
-    if section_name in config.sections():
-        brand_names = config.get(section_name, 'BrandColumnName').split(',')
-        for name in brand_names:
-            col_name_to_field_mapping[name] = 'brand'
-
-        model_names = config.get(section_name, 'ModelColumnName').split(',')
-        for name in model_names:
-            col_name_to_field_mapping[name] = 'model'
-
-        quantity_names = config.get(section_name, 'QuantityColumnName').split(',')
-        for name in quantity_names:
-            col_name_to_field_mapping[name] = 'quantity'
-
-        period_names = config.get(section_name, 'PeriodColumnName').split(',')
-        for name in period_names:
-            col_name_to_field_mapping[name] = 'period'
-
-    return col_name_to_field_mapping
 
 
 def process_excel_file(file_name, size, file):
@@ -66,7 +37,7 @@ def process_excel_file(file_name, size, file):
     quantity_index = -1
     products = []
 
-    col_name_to_field_mapping = build_column_name_mapping()
+    col_name_to_field_mapping = configreader.INSTANCE.build_column_name_mapping(DEFAULT_COL_MODEL_NAME)
     for cols in df.itertuples(name=None):
         if is_first_row:
             for i, name in enumerate(cols):
