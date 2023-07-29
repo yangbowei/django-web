@@ -6,7 +6,8 @@ from stockapp.models import Product
 class UploadProductFileForm(forms.Form):
     file = forms.FileField(allow_empty_file=False,
                            max_length=64,
-                           widget=forms.ClearableFileInput(attrs={"class": "form-control"}))
+                           widget=forms.ClearableFileInput(attrs={"class": "form-control",
+                                                                  'multiple': True}))
 
 
 class QueryTextForm(forms.Form):

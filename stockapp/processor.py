@@ -1,24 +1,56 @@
+import configparser
 import hashlib
 import re
-
 import pandas as pd
-
 from . import models
 
-COLS = set(['品牌', '型号', '库存', '周期'])
-COL_MODEL_NAME = {
-    '品牌': 'brand',
-    '型号': 'model',
-    '库存': 'quantity',
-    '周期': 'period'
+
+DEFAULT_COL_MODEL_NAME = {
+    'brand': '品牌',
+    'model': '型号',
+    'quantity': '库存',
+    'period': '周期'
 }
 
 
+def build_column_name_mapping():
+    col_name_to_field_mapping = {}
+    for key in DEFAULT_COL_MODEL_NAME:
+        col_name_to_field_mapping[DEFAULT_COL_MODEL_NAME[key]] = key
+
+    config = configparser.ConfigParser()
+    read_ok = config.read('stockapp/config.ini')
+
+    section_name = 'EXCEL'
+    if section_name in config.sections():
+        brand_names = config.get(section_name, 'BrandColumnName').split(',')
+        for name in brand_names:
+            col_name_to_field_mapping[name] = 'brand'
+
+        model_names = config.get(section_name, 'ModelColumnName').split(',')
+        for name in model_names:
+            col_name_to_field_mapping[name] = 'model'
+
+        quantity_names = config.get(section_name, 'QuantityColumnName').split(',')
+        for name in quantity_names:
+            col_name_to_field_mapping[name] = 'quantity'
+
+        period_names = config.get(section_name, 'PeriodColumnName').split(',')
+        for name in period_names:
+            col_name_to_field_mapping[name] = 'period'
+
+    return col_name_to_field_mapping
+
+
 def process_excel_file(file_name, size, file):
+    """
+    @return success, message
+    """
+
     checksum_value = hashlib.file_digest(file, "md5").hexdigest()
     valid_result = validate_file(file_name, size, checksum_value)
     if valid_result is not None:
-        return valid_result
+        return False, valid_result
 
     if file_name.endswith('.xlsx') or file_name.endswith('.xls'):
         df = pd.read_excel(file, header=None)
@@ -28,22 +60,24 @@ def process_excel_file(file_name, size, file):
     df = df.dropna(how='all')
     df = df.drop_duplicates()
     if len(df) <= 1:
-        return 'No valid data found in file'
+        return False, 'No valid data found in file'
     is_first_row = True
     name_index_map = {}
     quantity_index = -1
     products = []
+
+    col_name_to_field_mapping = build_column_name_mapping()
     for cols in df.itertuples(name=None):
         if is_first_row:
             for i, name in enumerate(cols):
-                if name in COLS:
-                    name_index_map[i] = name
-                    if name == '库存':
+                if name in col_name_to_field_mapping:
+                    name_index_map[i] = col_name_to_field_mapping[name]
+                    if col_name_to_field_mapping[name] == 'quantity':
                         quantity_index = i
 
             if len(name_index_map) == 0:
                 # no matching columns
-                return 'No valid column found in file'
+                return False, 'No valid column found in file'
             is_first_row = False
         else:
             product_dict = {}
@@ -52,7 +86,7 @@ def process_excel_file(file_name, size, file):
                     value = extract_number(cols[i])
                 else:
                     value = cols[i]
-                product_dict[COL_MODEL_NAME[name_index_map[i]]] = value
+                product_dict[name_index_map[i]] = value
             product_dict['source'] = file_name
             products.append(product_dict)
 
@@ -62,14 +96,14 @@ def process_excel_file(file_name, size, file):
     file_item = models.ProductFile(name=file_name, size=size, checksum=checksum_value)
     file_item.save()
 
-    return str.format('导入成功{}条数据。注意数据若有重复可能存在误差', len(objs))
+    return True, len(objs)
 
 
 def validate_file(file_name, size, checksum_value):
     if not (file_name.endswith('.xlsx') or file_name.endswith('.xls') or file_name.endswith('.csv')):
-        return "File type not supported"
+        return "文件类型不支持，支持类型：xlsx, xls, csv"
     if models.ProductFile.objects.filter(checksum=checksum_value).exists():
-        return "File has been loaded"
+        return "该文件已经导入过了"
     return None
 
 

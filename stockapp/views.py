@@ -40,9 +40,14 @@ def add_products(request):
     if request.method == "POST":
         form = forms.UploadProductFileForm(request.POST, request.FILES)
         if form.is_valid():
-            for name, file in form.files.items():
-                msg = processor.process_excel_file(file.name, file.size, file.file)
-                return render(request, "action_result.html", {"message": msg})
+            msg = []
+            for file in request.FILES.getlist('file'):
+                success, result_msg = processor.process_excel_file(file.name, file.size, file.file)
+                if success:
+                    msg.append(str.format('成功导入{}条数据，文件："{}"', result_msg, file.name))
+                else:
+                    msg.append(str.format('导入失败，原因：{}。文件："{}"', result_msg, file.name))
+            return render(request, "action_result.html", {"messages": msg})
     else:
         form = forms.UploadProductFileForm()
         return render(request, "add_products.html", {"form": form})
@@ -75,7 +80,7 @@ def delete_all_products(request):
     models.ProductFile.objects.all().delete()
     models.Product.objects.all().delete()
     msg = str.format('来自{}个文件的{}条数据已被删除!', product_file_count, product_count)
-    return render(request, "action_result.html", {"message": msg})
+    return render(request, "action_result.html", {"messages": [msg]})
 
 
 def search_product(request):
