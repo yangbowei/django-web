@@ -4,10 +4,51 @@
 {% block title %}批量删除{% endblock %}
 
 {% block content %}
+<svg xmlns="http://www.w3.org/2000/svg" class="d-none">
+    <symbol id="exclamation-triangle-fill" viewBox="0 0 16 16">
+      <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
+    </symbol>
+  </svg>
+
+<div>
+    <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h1 class="modal-title fs-5" id="deleteModalLabel">警告</h1>
+            </div>
+            <div class="modal-body alert alert-danger">
+                删除该文件导入的所有数据！
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+              <a type="button" class="btn btn-danger" href="" id="deleteConfirmBtn">删除</a>
+            </div>
+          </div>
+        </div>
+    </div>
+</div>
+
 <div class="container">
     {% render_table table %}
+
+    <div id="liveAlertPlaceholder"></div>
 
     <a class="btn btn-primary" href="/product/delete_all/" role="button"
        onclick="return confirm('该操作会删除所有数据，是否确认？');">全部删除</a>
 </div>
+{% endblock %}
+
+{% block js %}
+<script tyep="text/javascript">
+    $(document).ready(function() {
+        // execute after page framework loading done
+    })
+
+    function deleteFile(fid) {
+        var confirmBtn = document.getElementById('deleteConfirmBtn');
+        confirmBtn.href = '/product-file/' + fid + '/delete/';
+    }
+
+</script>
 {% endblock %}

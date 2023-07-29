@@ -1,1 +1,2 @@
-<a class="btn btn-danger btn-sm" href="{{ record.id }}/delete/" role="button">删除</a>
+{% comment %} <a class="btn btn-danger btn-sm btn-delete" role="button"">删除</a> {% endcomment %}
+<button onclick="deleteFile({{ record.id }})" type="button" class="btn btn-danger btn-sm btn-delete" data-bs-toggle="modal" data-bs-target="#deleteModal">删除</button>

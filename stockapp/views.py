@@ -90,7 +90,7 @@ def delete_all_products(request):
 def product_files(request):
     file_list = models.ProductFile.objects.all()
     table = tables.ProductFileTable(file_list)
-    table.paginate(page=request.GET.get("page", 1), per_page=25)
+    table.paginate(page=request.GET.get("page", 1), per_page=configreader.INSTANCE.get_product_file_page_size())
     table.attrs.update({"class": "table table-striped table-bordered"})
     return render(request, "delete_products.html", {"table": table})
 

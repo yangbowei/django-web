@@ -42,5 +42,11 @@ class ConfigReader:
             return self.config.get(section_name, 'ProductPageSize', fallback=default_size)
         return default_size
 
+    def get_product_file_page_size(self, default_size=25):
+        section_name = 'QUERY'
+        if section_name in self.config.sections():
+            return self.config.get(section_name, 'ProductFilePageSize', fallback=default_size)
+        return default_size
+
 
 INSTANCE = ConfigReader()
