@@ -1,3 +1,4 @@
+from django.contrib import messages
 from django.db.models import Q
 from django.http import HttpResponse
 from django.shortcuts import redirect
@@ -46,14 +47,15 @@ def add_products(request):
     if request.method == "POST":
         form = forms.UploadProductFileForm(request.POST, request.FILES)
         if form.is_valid():
-            msg = []
             for file in request.FILES.getlist('file'):
                 success, result_msg = processor.process_excel_file(file.name, file.size, file.file)
                 if success:
-                    msg.append(str.format('成功导入{}条数据，文件："{}"', result_msg, file.name))
+                    m = str.format('成功导入{}条数据，文件："{}"', result_msg, file.name)
+                    messages.success(request, m)
                 else:
-                    msg.append(str.format('导入失败，原因：{}。文件："{}"', result_msg, file.name))
-            return render(request, "action_result.html", {"messages": msg})
+                    m = str.format('导入失败，原因：{}。文件："{}"', result_msg, file.name)
+                    messages.error(request, m)
+            return redirect(request.META['HTTP_REFERER'])
     else:
         form = forms.UploadProductFileForm()
         return render(request, "add_products.html", {"form": form})
@@ -82,11 +84,15 @@ def delete_product(request, uid):
 
 def delete_all_products(request):
     product_file_count = models.ProductFile.objects.count()
+    if product_file_count == 0:
+        messages.info(request, "没有文件")
+        return redirect(request.META['HTTP_REFERER'])
+
     product_count = models.Product.objects.count()
     models.ProductFile.objects.all().delete()
     models.Product.objects.all().delete()
-    msg = str.format('来自{}个文件的{}条数据已被删除!', product_file_count, product_count)
-    return render(request, "action_result.html", {"messages": [msg]})
+    messages.success(request, str.format('来自{}个文件的{}条数据已被删除!', product_file_count, product_count))
+    return redirect(request.META['HTTP_REFERER'])
 
 
 def product_files(request):
@@ -98,16 +104,15 @@ def product_files(request):
 
 
 def delete_product_file(request, fid):
-    msg = []
     if models.ProductFile.objects.filter(pk=fid).exists():
         models.ProductFile.objects.filter(pk=fid).delete()
         product_set_to_delete = models.Product.objects.filter(file_id=fid)
         count = product_set_to_delete.count()
         product_set_to_delete.delete()
-        msg.append(str(count) + "条记录被删除")
+        messages.success(request, str(count) + "条记录被删除")
     else:
-        msg.append("文件未找到")
-    return render(request, 'action_result.html', {"messages": msg})
+        messages.error(request, "文件未找到")
+    return redirect(request.META['HTTP_REFERER'])
 
 
 def search_product(request):

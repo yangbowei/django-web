@@ -29,14 +29,27 @@
     </div>
 </div>
 
-<div class="container">
+<div class="container m-auto p-2">
     {% render_table table %}
 
-    <div id="liveAlertPlaceholder"></div>
+<!--    <div id="liveAlertPlaceholder"></div>-->
 
     <a class="btn btn-primary" href="/product/delete_all/" role="button"
        onclick="return confirm('该操作会删除所有数据，是否确认？');">全部删除</a>
 </div>
+
+{% if messages %}
+<div class="container w-75">
+    <ul class="messages">
+        {% for message in messages %}
+        <div class="alert alert-{% if message.tags == "error" %}danger"{% elif message.tags == "info" %}info{% else %}success{% endif %}" role="alert">
+            {{ message }}
+        </div>
+{% endfor %}
+</ul>
+</div>
+{% endif %}
+
 {% endblock %}
 
 {% block js %}
