@@ -9,6 +9,7 @@ from . import forms
 from . import models
 from . import processor
 from . import tables
+from . import filters
 
 
 # Create your views here.
@@ -18,12 +19,13 @@ def index(req):
 
 def get_product(request):
     product_list = models.Product.objects.all()
-    table = tables.ProductTable(product_list)
+    f = filters.ProductFilter(request.GET, queryset=product_list)
+    table = tables.ProductTable(data=f.qs)
     RequestConfig(request).configure(table)
     page_size = configreader.INSTANCE.get_product_page_size(default_size=25)
     table.paginate(page=request.GET.get("page", 1), per_page=page_size)
     table.attrs.update({"class": "table table-striped table-bordered"})
-    return render(request, "products.html", {"table": table})
+    return render(request, "products.html", {"table": table, "filter": f})
 
 
 def add_product(request):
