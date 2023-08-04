@@ -3,24 +3,52 @@
 {% block title %}批量添加产品{% endblock %}
 
 {% block content %}
-<div class="container">
-    <form method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-        {{ form }}
-        <input class="btn btn-success mt-2 mb-2" type="submit" value="上传">
-    </form>
-</div>
+    <div class="container w-50 mx-auto mt-4">
+        <h5>选择要上传的文件</h5>
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
 
-{% if messages %}
-<div class="container w-75">
-    <ul class="messages">
-        {% for message in messages %}
-        <div {% if message.tags == "error" %} class="alert alert-danger" {% else %} class="alert alert-success" {% endif %} role="alert">
-            {{ message }}
+            {% for field in form %}
+                <div class="fieldWrapper">
+                    {# {{ field.errors }}#}
+                    {# {{ field.label_tag }}#}
+                    {{ field }}
+                    {% if field.help_text %}
+                        <p class="help" id="{{ field.id_for_label }}_helptext">
+                            {{ field.help_text|safe }}
+                        </p>
+                    {% endif %}
+                </div>
+            {% endfor %}
+
+            <input class="btn btn-success mt-2 mb-2" type="submit" value="上传">
+        </form>
+    </div>
+
+    {{ form.non_field_errors }}
+    {% if form.errors %}
+        <div class="container w-75">
+            <ul class="errorlist">
+                {% for field in form %}
+                    {% for error in field.errors %}
+                        <div class="alert alert-danger">{{ error|escape }}</div>
+                    {% endfor %}
+                {% endfor %}
+            </ul>
         </div>
-{% endfor %}
-</ul>
-</div>
-{% endif %}
+    {% endif %}
+
+    {% if messages %}
+        <div class="container w-75">
+            <ul class="messages">
+                {% for message in messages %}
+                    <div {% if message.tags == "error" %} class="alert alert-danger" {% else %}
+                                                          class="alert alert-success" {% endif %} role="alert">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
 
 {% endblock %}

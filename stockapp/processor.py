@@ -48,7 +48,7 @@ def process_excel_file(file_name, size, file):
 
             if len(name_index_map) == 0:
                 # no matching columns
-                return False, 'No valid column found in file'
+                return False, '未找到匹配列名'
             is_first_row = False
         else:
             product_dict = {}

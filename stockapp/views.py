@@ -1,16 +1,17 @@
+import json
+
 from django.contrib import messages
 from django.db.models import Q
 from django.http import HttpResponse
 from django.shortcuts import redirect
 from django.shortcuts import render
 from django_tables2 import RequestConfig
-import json
+
 from . import configreader
+from . import filters
 from . import forms
 from . import models
-from . import processor
 from . import tables
-from . import filters
 
 
 # Create your views here.
@@ -43,6 +44,8 @@ def add_product(request):
         return redirect(get_product)
 
 
+"""
+# Deprecated. use FileFieldFormView instead.
 def add_products(request):
     if request.method == "POST":
         form = forms.UploadProductFileForm(request.POST, request.FILES)
@@ -59,6 +62,7 @@ def add_products(request):
     else:
         form = forms.UploadProductFileForm()
         return render(request, "add_products.html", {"form": form})
+"""
 
 
 def edit_product(request, uid):
@@ -142,7 +146,7 @@ def search_product(request):
 
 def update_product_hit_point(request):
     if request.method == "POST" and \
-            request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest': # is ajax request
+            request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest':  # is ajax request
         product_id = request.POST.get('pid')
         hit_point_value = request.POST.get('val')
         if hit_point_value is None or product_id is None:

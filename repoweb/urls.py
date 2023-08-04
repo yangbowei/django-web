@@ -19,6 +19,7 @@ from django.views.static import serve
 
 from stockapp import views
 from . import settings
+from stockapp import formviews
 
 urlpatterns = [
     path('', views.get_product),
@@ -29,7 +30,7 @@ urlpatterns = [
     path('product/delete_all/', views.delete_all_products),
     path('product-file/', views.product_files),
     path('product-file/<int:fid>/delete/', views.delete_product_file),
-    path('product/batch-add/', views.add_products),
+    path('product/batch-add/', formviews.FileFieldFormView.as_view()),
     path('product/search/', views.search_product),
     path('product/update-hp/', views.update_product_hit_point),
     path('admin/', admin.site.urls),
